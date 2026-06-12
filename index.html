@@ -4,134 +4,387 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>키워드 이슈 보고서</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500&family=Inter:wght@400;500&display=swap" rel="stylesheet">
   <style>
+    :root {
+      --primary: #cc785c;
+      --primary-active: #a9583e;
+      --primary-disabled: #e6dfd8;
+      --ink: #141413;
+      --body: #3d3d3a;
+      --body-strong: #252523;
+      --muted: #6c6a64;
+      --muted-soft: #8e8b82;
+      --hairline: #e6dfd8;
+      --canvas: #faf9f5;
+      --surface-soft: #f5f0e8;
+      --surface-card: #efe9de;
+      --surface-dark: #181715;
+      --surface-dark-soft: #1f1e1b;
+      --on-primary: #ffffff;
+      --on-dark: #faf9f5;
+      --on-dark-soft: #a09d96;
+      --success: #5db872;
+      --error: #c64545;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+      --radius-xl: 16px;
+      --radius-pill: 9999px;
+      --font-display: "Cormorant Garamond", "Times New Roman", serif;
+      --font-body: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
     * { box-sizing: border-box; }
+
     body {
       margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: #f3f4f6;
-      color: #111827;
-      padding: 32px 20px 64px;
+      font-family: var(--font-body);
+      font-size: 16px;
+      line-height: 1.55;
+      color: var(--body);
+      background: var(--canvas);
     }
-    .app { max-width: 960px; margin: 0 auto; }
-    .header { margin-bottom: 24px; }
-    .header h1 { margin: 0 0 8px; font-size: 28px; }
-    .header p { margin: 0; color: #6b7280; }
-    .layout { display: grid; gap: 24px; }
-    .card {
-      background: #fff;
-      border-radius: 12px;
-      padding: 24px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+
+    .top-nav {
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      border-bottom: 1px solid var(--hairline);
+      background: var(--canvas);
     }
-    .card h2 { margin: 0 0 16px; font-size: 20px; }
-    label { display: block; font-weight: 600; margin-bottom: 8px; }
-    input[type="text"], input[type="email"] {
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--ink);
+      font-size: 14px;
+      font-weight: 500;
+      letter-spacing: 0;
+    }
+
+    .brand-mark {
+      width: 18px;
+      height: 18px;
+      color: var(--ink);
+    }
+
+    .badge-coral {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: var(--radius-pill);
+      background: var(--primary);
+      color: var(--on-primary);
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+    }
+
+    .hero {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 64px 24px 32px;
+    }
+
+    .hero h1 {
+      margin: 16px 0 12px;
+      font-family: var(--font-display);
+      font-size: clamp(36px, 5vw, 48px);
+      font-weight: 400;
+      line-height: 1.1;
+      letter-spacing: -1px;
+      color: var(--ink);
+      max-width: 720px;
+    }
+
+    .hero p {
+      margin: 0;
+      max-width: 640px;
+      color: var(--body);
+      font-size: 16px;
+    }
+
+    .app {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px 96px;
+    }
+
+    .layout {
+      display: grid;
+      gap: 24px;
+    }
+
+    .feature-card,
+    .preview-card {
+      background: var(--surface-card);
+      border: 1px solid var(--hairline);
+      border-radius: var(--radius-lg);
+      padding: 32px;
+    }
+
+    .preview-card {
+      background: var(--surface-dark);
+      border-color: var(--surface-dark);
+      color: var(--on-dark);
+    }
+
+    .card-title {
+      margin: 0 0 20px;
+      font-size: 18px;
+      font-weight: 500;
+      line-height: 1.4;
+      color: var(--ink);
+    }
+
+    .preview-card .card-title {
+      color: var(--on-dark);
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--body-strong);
+    }
+
+    .preview-card label {
+      color: var(--on-dark);
+    }
+
+    input[type="text"],
+    input[type="email"] {
       width: 100%;
-      padding: 10px 12px;
-      border: 1px solid #d1d5db;
-      border-radius: 8px;
+      height: 40px;
+      padding: 10px 14px;
+      border: 1px solid var(--hairline);
+      border-radius: var(--radius-md);
+      background: var(--canvas);
+      color: var(--ink);
       font: inherit;
     }
-    .row { display: flex; gap: 8px; margin-bottom: 12px; }
-    .row input { flex: 1; margin-bottom: 0; }
+
+    input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(204, 120, 92, 0.15);
+    }
+
+    .row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .row input { flex: 1; }
+
     button {
-      font: inherit;
+      font-family: var(--font-body);
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 1;
       cursor: pointer;
       border: none;
-      border-radius: 8px;
-      padding: 10px 16px;
-      font-weight: 600;
+      border-radius: var(--radius-md);
+      height: 40px;
+      padding: 12px 20px;
     }
-    .btn-add { background: #e5e7eb; color: #111827; }
-    .btn-submit {
+
+    .btn-secondary {
+      background: var(--canvas);
+      color: var(--ink);
+      border: 1px solid var(--hairline);
+    }
+
+    .btn-secondary:active {
+      background: var(--surface-soft);
+    }
+
+    .btn-primary {
       width: 100%;
       margin-top: 8px;
-      padding: 12px 16px;
-      background: #2563eb;
-      color: #fff;
+      background: var(--primary);
+      color: var(--on-primary);
     }
-    .btn-submit:disabled { opacity: 0.6; cursor: not-allowed; }
-    .tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; min-height: 32px; }
+
+    .btn-primary:active {
+      background: var(--primary-active);
+    }
+
+    .btn-primary:disabled {
+      background: var(--primary-disabled);
+      color: var(--muted);
+      cursor: not-allowed;
+    }
+
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 20px;
+      min-height: 32px;
+    }
+
     .tag {
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      padding: 6px 10px;
-      background: #eff6ff;
-      color: #1d4ed8;
-      border-radius: 999px;
-      font-size: 14px;
+      padding: 4px 12px;
+      background: var(--canvas);
+      color: var(--ink);
+      border: 1px solid var(--hairline);
+      border-radius: var(--radius-pill);
+      font-size: 13px;
+      font-weight: 500;
     }
+
     .tag button {
       background: transparent;
-      color: #1d4ed8;
+      color: var(--primary);
       padding: 0;
+      height: auto;
       font-size: 16px;
-      line-height: 1;
     }
+
     .checkbox-row {
       display: flex;
       align-items: center;
       gap: 8px;
       margin: 16px 0 20px;
       cursor: pointer;
+      font-size: 14px;
+      color: var(--body);
     }
+
     .banner {
-      border-radius: 8px;
-      padding: 12px 16px;
+      border-radius: var(--radius-lg);
+      padding: 16px 20px;
       margin-bottom: 16px;
       display: none;
+      font-size: 14px;
     }
-    .banner.error { display: block; background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; }
-    .banner.success { display: block; background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; }
-    .banner.loading { display: block; background: #fff; border: 1px solid #e5e7eb; color: #374151; }
+
+    .banner.error {
+      display: block;
+      background: #fdf3f3;
+      color: var(--error);
+      border: 1px solid rgba(198, 69, 69, 0.25);
+    }
+
+    .banner.success {
+      display: block;
+      background: #f0faf3;
+      color: var(--success);
+      border: 1px solid rgba(93, 184, 114, 0.25);
+    }
+
+    .banner.loading {
+      display: block;
+      background: var(--surface-soft);
+      color: var(--body);
+      border: 1px solid var(--hairline);
+    }
+
     .preview-box {
-      border: 1px solid #e5e7eb;
-      border-radius: 8px;
+      border: 1px solid var(--surface-dark-soft);
+      border-radius: var(--radius-lg);
       overflow: hidden;
-      background: #fff;
+      background: var(--surface-dark-soft);
       min-height: 200px;
     }
+
     iframe {
       width: 100%;
       min-height: 720px;
       border: none;
       display: none;
+      background: var(--canvas);
     }
+
     .empty-preview {
-      padding: 32px;
+      padding: 48px 24px;
       text-align: center;
-      color: #6b7280;
+      color: var(--on-dark-soft);
+      font-size: 14px;
     }
+
+    .generated-at {
+      color: var(--on-dark-soft);
+      font-size: 13px;
+      margin: 0 0 16px;
+      display: none;
+    }
+
+    .footer {
+      background: var(--surface-dark);
+      color: var(--on-dark-soft);
+      padding: 48px 24px;
+      font-size: 14px;
+    }
+
+    .footer-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .footer strong {
+      display: block;
+      color: var(--on-dark);
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+
     @media (min-width: 900px) {
-      .layout { grid-template-columns: 1fr 1fr; align-items: start; }
-      .preview-card { grid-column: 1 / -1; }
+      .layout {
+        grid-template-columns: 1fr 1fr;
+        align-items: start;
+      }
+
+      .preview-card {
+        grid-column: 1 / -1;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="app">
-    <header class="header">
-      <h1>키워드 이슈 보고서</h1>
-      <p>최근 7일 이내 이슈를 수집해 보고서를 생성하고 이메일로 발송합니다.</p>
-    </header>
+  <nav class="top-nav">
+    <div class="brand">
+      <svg class="brand-mark" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M12 2v20M2 12h20M5 5l14 14M19 5L5 19" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>
+      <span>Issue Report</span>
+    </div>
+    <span class="badge-coral">Beta</span>
+  </nav>
 
+  <header class="hero">
+    <span class="badge-coral" style="background:var(--surface-card);color:var(--ink);letter-spacing:1px;">Weekly Brief</span>
+    <h1>키워드 이슈 보고서</h1>
+    <p>최근 7일 이내 이슈를 수집해 보고서를 생성하고 이메일로 발송합니다.</p>
+  </header>
+
+  <main class="app">
     <div id="errorBanner" class="banner error"></div>
     <div id="successBanner" class="banner success"></div>
     <div id="loadingBanner" class="banner loading">
       <strong>처리 중...</strong>
-      <p style="margin:8px 0 0;color:#6b7280;">이슈 수집 → 보고서 생성 → 이메일 발송 (10~30초)</p>
+      <p style="margin:8px 0 0;color:var(--muted);">이슈 수집 → 보고서 생성 → 이메일 발송 (10~30초)</p>
     </div>
 
     <div class="layout">
-      <section class="card">
-        <h2>보고서 생성</h2>
+      <section class="feature-card">
+        <h2 class="card-title">보고서 생성</h2>
 
         <label for="keywordInput">키워드</label>
         <div class="row">
           <input id="keywordInput" type="text" placeholder="예: AI 규제">
-          <button class="btn-add" type="button" id="addKeywordBtn">추가</button>
+          <button class="btn-secondary" type="button" id="addKeywordBtn">추가</button>
         </div>
         <div class="tags" id="keywordTags"></div>
 
@@ -143,12 +396,12 @@
           생성 후 이메일 발송
         </label>
 
-        <button class="btn-submit" type="button" id="submitBtn">보고서 생성</button>
+        <button class="btn-primary" type="button" id="submitBtn">보고서 생성</button>
       </section>
 
-      <section class="card preview-card">
-        <h2>보고서 미리보기</h2>
-        <p id="generatedAt" style="color:#6b7280;margin-top:0;display:none;"></p>
+      <section class="preview-card">
+        <h2 class="card-title">보고서 미리보기</h2>
+        <p class="generated-at" id="generatedAt"></p>
         <div class="preview-box">
           <div class="empty-preview" id="emptyPreview">
             키워드를 입력하고 보고서를 생성하면 결과가 여기에 표시됩니다.
@@ -157,7 +410,14 @@
         </div>
       </section>
     </div>
-  </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <strong>키워드 이슈 보고서 서비스</strong>
+      Gemini + Tavily 기반 · 최근 7일 이슈 수집
+    </div>
+  </footer>
 
   <script>
     const DEFAULT_API_BASE = "https://gayoungg111-test.vercel.app";

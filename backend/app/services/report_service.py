@@ -136,19 +136,19 @@ JSON 스키마:
             for issue in report.issues:
                 issue_blocks.append(
                     f"""
-                    <div style="margin-bottom: 20px; padding: 16px; border: 1px solid #e5e7eb; border-radius: 8px;">
-                        <h3 style="margin: 0 0 8px; color: #111827; font-size: 16px;">{escape(issue.title)}</h3>
-                        <p style="margin: 0 0 8px; color: #6b7280; font-size: 13px;">
+                    <div style="margin-bottom: 20px; padding: 20px; border: 1px solid #e6dfd8; border-radius: 12px; background: #f5f0e8;">
+                        <h3 style="margin: 0 0 8px; color: #141413; font-size: 16px; font-weight: 500;">{escape(issue.title)}</h3>
+                        <p style="margin: 0 0 8px; color: #6c6a64; font-size: 13px;">
                             {escape(issue.date)} · {escape(issue.source)}
                         </p>
-                        <p style="margin: 0 0 8px; color: #374151; line-height: 1.6;">{escape(issue.summary)}</p>
-                        <a href="{escape(issue.url)}" style="color: #2563eb; font-size: 13px;">원문 보기</a>
+                        <p style="margin: 0 0 8px; color: #3d3d3a; line-height: 1.55;">{escape(issue.summary)}</p>
+                        <a href="{escape(issue.url)}" style="color: #cc785c; font-size: 13px; font-weight: 500; text-decoration: none;">원문 보기</a>
                     </div>
                     """
                 )
             issues_html = "".join(issue_blocks)
         else:
-            issues_html = '<p style="color: #6b7280;">수집된 이슈가 없습니다.</p>'
+            issues_html = '<p style="color: #6c6a64;">수집된 이슈가 없습니다.</p>'
 
         return f"""<!DOCTYPE html>
 <html lang="ko">
@@ -156,24 +156,24 @@ JSON 스키마:
   <meta charset="UTF-8">
   <title>{escape(report.title)}</title>
 </head>
-<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f9fafb; margin: 0; padding: 24px;">
-  <div style="max-width: 720px; margin: 0 auto; background: #ffffff; border-radius: 12px; padding: 32px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-    <p style="margin: 0 0 8px; color: #6b7280; font-size: 13px;">키워드: {escape(keyword_text)} · 생성: {generated_at}</p>
-    <h1 style="margin: 0 0 24px; color: #111827; font-size: 24px;">{escape(report.title)}</h1>
+<body style="font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #faf9f5; margin: 0; padding: 32px 20px;">
+  <div style="max-width: 720px; margin: 0 auto; background: #efe9de; border: 1px solid #e6dfd8; border-radius: 12px; padding: 32px;">
+    <p style="margin: 0 0 8px; color: #6c6a64; font-size: 13px; font-weight: 500;">키워드: {escape(keyword_text)} · 생성: {generated_at}</p>
+    <h1 style="margin: 0 0 24px; color: #141413; font-family: 'Cormorant Garamond', 'Times New Roman', serif; font-size: 36px; font-weight: 400; line-height: 1.15; letter-spacing: -0.5px;">{escape(report.title)}</h1>
 
     <section style="margin-bottom: 28px;">
-      <h2 style="margin: 0 0 12px; color: #111827; font-size: 18px;">요약</h2>
-      <p style="margin: 0; color: #374151; line-height: 1.7;">{escape(report.summary)}</p>
+      <h2 style="margin: 0 0 12px; color: #141413; font-size: 18px; font-weight: 500;">요약</h2>
+      <p style="margin: 0; color: #3d3d3a; line-height: 1.55;">{escape(report.summary)}</p>
     </section>
 
     <section style="margin-bottom: 28px;">
-      <h2 style="margin: 0 0 12px; color: #111827; font-size: 18px;">주요 이슈</h2>
+      <h2 style="margin: 0 0 12px; color: #141413; font-size: 18px; font-weight: 500;">주요 이슈</h2>
       {issues_html}
     </section>
 
-    <section>
-      <h2 style="margin: 0 0 12px; color: #111827; font-size: 18px;">트렌드 및 시사점</h2>
-      <p style="margin: 0; color: #374151; line-height: 1.7;">{escape(report.insights)}</p>
+    <section style="padding: 24px; background: #181715; border-radius: 12px;">
+      <h2 style="margin: 0 0 12px; color: #faf9f5; font-size: 18px; font-weight: 500;">트렌드 및 시사점</h2>
+      <p style="margin: 0; color: #a09d96; line-height: 1.55;">{escape(report.insights)}</p>
     </section>
   </div>
 </body>
