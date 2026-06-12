@@ -4,6 +4,7 @@ import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.config import settings
 from app.routers import report
 
 logging.basicConfig(level=logging.INFO)
@@ -38,5 +39,11 @@ app.include_router(report.router)
 
 
 @app.get("/health")
-async def health_check() -> dict[str, str]:
-    return {"status": "ok"}
+@app.get("/api/health")
+async def health_check() -> dict[str, str | bool]:
+    return {
+        "status": "ok",
+        "gemini_api_key_configured": bool(settings.gemini_api_key),
+        "tavily_api_key_configured": bool(settings.tavily_api_key),
+        "gemini_model": settings.gemini_model,
+    }
