@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
 
-from pydantic import AliasChoices, Field
+from pydantic import AliasChoices, Field, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -9,6 +9,14 @@ def _default_output_dir() -> Path:
     if os.getenv("VERCEL"):
         return Path("/tmp/reports")
     return Path(__file__).resolve().parent.parent / "output"
+
+
+def _read_env(*names: str) -> str:
+    for name in names:
+        value = os.getenv(name)
+        if value:
+            return value
+    return ""
 
 
 class Settings(BaseSettings):
@@ -38,6 +46,16 @@ class Settings(BaseSettings):
     smtp_from: str = ""
 
     output_dir: Path = _default_output_dir()
+
+    @model_validator(mode="after")
+    def fill_from_os_environ(self) -> "Settings":
+        if not self.gemini_api_key:
+            self.gemini_api_key = _read_env("GEMINI_API_KEY", "gemini_api_key")
+        if self.gemini_model == "gemini-2.0-flash":
+            self.gemini_model = _read_env("GEMINI_MODEL", "gemini_model") or self.gemini_model
+        if not self.tavily_api_key:
+            self.tavily_api_key = _read_env("TAVILY_API_KEY", "tavily_api_key")
+        return self
 
 
 settings = Settings()
