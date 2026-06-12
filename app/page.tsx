@@ -123,7 +123,7 @@ export default function HomePage() {
       <header className="hero">
         <span className="badge-coral badge-muted">Weekly Brief</span>
         <h1>키워드 이슈 보고서</h1>
-        <p>Gemini API로 최근 7일 이내 이슈를 분석해 보고서를 생성합니다.</p>
+        <p>Gemini API와 Google Search로 최근 7일 이내 이슈를 수집·분석해 보고서를 생성합니다.</p>
       </header>
 
       <main className="app">
@@ -219,7 +219,7 @@ export default function HomePage() {
       <footer className="footer">
         <div className="footer-inner">
           <strong>키워드 이슈 보고서 서비스</strong>
-          Next.js + Gemini API · 최근 7일 이슈 분석
+          Next.js + Gemini · Google Search 기반 최근 7일 이슈 분석
         </div>
       </footer>
     </>

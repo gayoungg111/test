@@ -4,7 +4,7 @@ import { env } from "@/lib/env";
 import type { ReportData } from "@/types/report";
 
 const SYSTEM_PROMPT = `당신은 뉴스·이슈 분석 전문가입니다.
-Google Search로 확인한 최근 정보를 근거로 보고서를 작성하세요.
+Google Search로 수집한 최근 정보를 근거로 보고서를 작성하세요.
 반드시 JSON 형식으로만 응답하고, 다른 텍스트는 포함하지 마세요.
 
 JSON 스키마:
@@ -25,9 +25,21 @@ JSON 스키마:
 
 규칙:
 - 최근 7일 이내 이슈만 다루세요.
-- 검색 결과에 없는 내용을 지어내지 마세요.
+- Google Search 결과에 없는 내용을 지어내지 마세요.
 - 중복 이슈는 하나로 통합하세요.
 - issues는 중요도 순으로 최대 10개까지 작성하세요.`;
+
+function parseReportJson(text: string): Partial<ReportData> {
+  try {
+    return JSON.parse(text) as Partial<ReportData>;
+  } catch {
+    const match = text.match(/\{[\s\S]*\}/);
+    if (!match) {
+      throw new Error("Gemini 응답을 JSON으로 파싱하지 못했습니다.");
+    }
+    return JSON.parse(match[0]) as Partial<ReportData>;
+  }
+}
 
 export async function generateReport(keywords: string[]): Promise<ReportData> {
   const apiKey = env.geminiApiKey();
@@ -36,7 +48,7 @@ export async function generateReport(keywords: string[]): Promise<ReportData> {
   }
 
   const ai = new GoogleGenAI({ apiKey });
-  const userPrompt = `키워드: ${keywords.join(", ")}\n분석 기간: 최근 7일`;
+  const userPrompt = `키워드: ${keywords.join(", ")}\n분석 기간: 최근 7일\nGoogle Search로 최신 뉴스·이슈를 검색한 뒤 보고서를 작성하세요.`;
 
   const response = await ai.models.generateContent({
     model: env.geminiModel(),
@@ -48,8 +60,12 @@ export async function generateReport(keywords: string[]): Promise<ReportData> {
     },
   });
 
-  const text = response.text || "{}";
-  const parsed = JSON.parse(text) as Partial<ReportData>;
+  const text = response.text?.trim();
+  if (!text) {
+    throw new Error("Gemini가 빈 응답을 반환했습니다.");
+  }
+
+  const parsed = parseReportJson(text);
 
   return {
     title: parsed.title || `최근 7일 ${keywords.join("·")} 이슈 보고서`,

@@ -4,7 +4,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "키워드 이슈 보고서",
-  description: "Gemini API로 최근 7일 이슈 보고서를 생성합니다.",
+  description: "Gemini API와 Google Search로 최근 7일 이슈 보고서를 생성합니다.",
 };
 
 export default function RootLayout({

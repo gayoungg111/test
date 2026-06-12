@@ -1,29 +1,40 @@
 # 키워드 이슈 보고서 서비스
 
-Next.js + **Gemini API**만으로 최근 7일 이슈 보고서를 생성합니다.
+Next.js + **Gemini API + Google Search**로 최근 7일 이슈 보고서를 생성합니다.  
+Tavily 등 외부 검색 API는 사용하지 않습니다.
 
 ## 기술 스택
 
 - **Next.js 15** — UI + API Routes
-- **Gemini API** — Google Search grounding으로 최근 이슈 수집·보고서 생성
+- **Gemini API** — 보고서 생성
+- **Google Search (Gemini grounding)** — 최근 이슈 검색
 - **Vercel** — 배포
-
-## Vercel 배포
-
-1. GitHub `main` 브랜치 연결
-2. **Framework Preset: Next.js** (Dashboard → Settings → General)
-3. Build Command / Output Directory **오버라이드 제거** (비워 두면 `vercel.json` + Next.js 기본값 사용)
-4. 환경 변수: `gemini_api_key` 또는 `GEMINI_API_KEY`
-5. Deployments → **Redeploy**
 
 ## Vercel 환경 변수
 
 | 변수 | 필수 | 설명 |
 |------|------|------|
-| `gemini_api_key` 또는 `GEMINI_API_KEY` | ✅ | Google Gemini API 키 |
+| `gemini_api_key` 또는 `GEMINI_API_KEY` | ✅ | Google AI Studio / Gemini API 키 |
 | `GEMINI_MODEL` | | 기본값 `gemini-2.0-flash` |
 
 참고: [`vercel.env.example`](vercel.env.example)
+
+## Vercel 배포 설정
+
+Dashboard → **Settings → General → Build & Development Settings**
+
+| 항목 | 값 |
+|------|-----|
+| Framework Preset | **Next.js** |
+| Build / Output / Install Command | Override **OFF** (비움) |
+
+저장 후 **Redeploy → Promote to Production**.
+
+**배포 확인**
+
+- `/version.txt` → `nextjs-gemini-google-search`
+- `/api/health` → `"search_provider":"google_search"`
+- 메인 화면 → **「보고서 생성」** (이메일 입력 없음)
 
 ## 로컬 실행
 
@@ -32,14 +43,11 @@ npm install
 npm run dev
 ```
 
-- UI: http://localhost:3000
-- API: http://localhost:3000/api/reports
-
 ## API
 
-### `GET /api/reports`
+### `GET /api/health` · `GET /api/reports`
 
-Gemini API 키 설정 상태 확인
+서비스 상태 및 Gemini API 키 설정 확인
 
 ### `POST /api/reports`
 
@@ -49,20 +57,9 @@ Gemini API 키 설정 상태 확인
 }
 ```
 
-생성된 보고서는 화면에 표시되며, **HTML 다운로드**·**텍스트 복사**로 저장할 수 있습니다.
-
 ## 프로젝트 구조
 
 ```
-app/
-  page.tsx              # 메인 UI
-  api/reports/route.ts  # 보고서 생성 API
-lib/
-  gemini.ts             # Gemini + Google Search
-  report-html.ts        # HTML 렌더링
+app/api/reports/route.ts  # 보고서 생성
+lib/gemini.ts             # Gemini + Google Search
 ```
-
-## 참고
-
-- 레거시 Python/Tavily 코드는 제거되었습니다.
-- 현재 배포는 **Next.js + Gemini API**만 사용합니다.
