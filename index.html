@@ -406,12 +406,7 @@
         <label for="emailInput">수신 이메일</label>
         <input id="emailInput" type="email" placeholder="user@example.com" required>
 
-        <label class="checkbox-row">
-          <input id="sendEmail" type="checkbox" checked>
-          생성 후 이메일 발송
-        </label>
-
-        <button class="btn-primary" type="button" id="submitBtn">검색</button>
+        <button class="btn-primary" type="button" id="submitBtn">보고서 생성 및 이메일 발송</button>
 
         <div id="resultsSection" class="results-section">
           <div class="results-header">
@@ -456,7 +451,6 @@
     const keywordInput = document.getElementById("keywordInput");
     const keywordTags = document.getElementById("keywordTags");
     const emailInput = document.getElementById("emailInput");
-    const sendEmail = document.getElementById("sendEmail");
     const submitBtn = document.getElementById("submitBtn");
     const resultsSection = document.getElementById("resultsSection");
     const resultsTitle = document.getElementById("resultsTitle");
@@ -474,9 +468,14 @@
     }
 
     function renderResults(data) {
-      resultsTitle.textContent = data.title || "검색 결과";
+      resultsTitle.textContent = data.title || "보고서";
+      const emailStatus = data.email_sent
+        ? " · 이메일 발송 완료"
+        : " · 이메일 미발송";
       generatedAt.textContent =
-        "생성 시각: " + new Date(data.generated_at).toLocaleString("ko-KR");
+        "생성 시각: " +
+        new Date(data.generated_at).toLocaleString("ko-KR") +
+        emailStatus;
       resultsSummary.textContent = data.summary || "요약 정보가 없습니다.";
 
       if (data.issues && data.issues.length > 0) {
@@ -539,7 +538,8 @@
       }
 
       submitBtn.disabled = true;
-      submitBtn.textContent = "검색 중...";
+      submitBtn.textContent = "생성 및 발송 중...";
+      resultsSection.classList.remove("visible");
 
       try {
         const response = await fetch(`${API_BASE}/api/reports`, {
@@ -548,7 +548,7 @@
           body: JSON.stringify({
             keywords,
             recipient_email: email,
-            send_email: sendEmail.checked,
+            send_email: true,
           }),
         });
 
@@ -562,7 +562,7 @@
         alert(error.message || "요청에 실패했습니다.");
       } finally {
         submitBtn.disabled = false;
-        submitBtn.textContent = "검색";
+        submitBtn.textContent = "보고서 생성 및 이메일 발송";
       }
     }
 
