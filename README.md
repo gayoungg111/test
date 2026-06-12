@@ -15,7 +15,7 @@ Tavily 등 외부 검색 API는 사용하지 않습니다.
 | 변수 | 필수 | 설명 |
 |------|------|------|
 | `gemini_api_key` 또는 `GEMINI_API_KEY` | ✅ | Google AI Studio / Gemini API 키 |
-| `GEMINI_MODEL` | | 기본값 `gemini-2.0-flash` |
+| `GEMINI_MODEL` | | 기본값 `gemini-2.5-flash` (`gemini-2.0-flash`는 자동 대체) |
 
 참고: [`vercel.env.example`](vercel.env.example)
 

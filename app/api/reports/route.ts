@@ -2,6 +2,7 @@ import { randomUUID } from "crypto";
 import { NextResponse } from "next/server";
 
 import { generateReport } from "@/lib/gemini";
+import { env } from "@/lib/env";
 import { renderReportHtml } from "@/lib/report-html";
 
 export const maxDuration = 60;
@@ -49,6 +50,7 @@ export async function GET() {
     status: "ok",
     service: "issue-report-nextjs",
     search_provider: "google_search",
+    gemini_model: env.geminiModel(),
     gemini_api_key_configured: Boolean(process.env.GEMINI_API_KEY || process.env.gemini_api_key),
   });
 }
