@@ -41,6 +41,18 @@
 
 4. **Redeploy** 실행 (환경 변수 추가 후 반드시 재배포)
 
+## HTML 확인 페이지
+
+배포 후 아래 URL로 서비스 동작을 확인할 수 있습니다.
+
+| URL | 설명 |
+|-----|------|
+| `/` | 메인 서비스 (키워드 입력 → 보고서 생성) |
+| `/service-check.html` | 배포 확인용 정적 페이지 |
+| `/sample-report.html` | 샘플 보고서 HTML 미리보기 |
+
+저장소 내 샘플 파일: [`samples/sample-report.html`](samples/sample-report.html)
+
 참고용 목록: [`vercel.env.example`](vercel.env.example)
 
 ## 배포 구조
