@@ -11,5 +11,7 @@ export async function GET() {
     gemini_api_key_configured: Boolean(
       process.env.GEMINI_API_KEY || process.env.gemini_api_key,
     ),
+    resend_api_key_configured: Boolean(process.env.RESEND_API_KEY || process.env.resend_api_key),
+    resend_from_configured: Boolean(process.env.RESEND_FROM_EMAIL || process.env.resend_from_email),
   });
 }

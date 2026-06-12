@@ -26,6 +26,7 @@ function buildPlainText(report: ReportResponse): string {
 export default function HomePage() {
   const [keywords, setKeywords] = useState<string[]>([]);
   const [keywordInput, setKeywordInput] = useState("");
+  const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [report, setReport] = useState<ReportResponse | null>(null);
   const resultsRef = useRef<HTMLDivElement>(null);
@@ -56,6 +57,11 @@ export default function HomePage() {
       return;
     }
 
+    if (!email.trim()) {
+      alert("수신 이메일을 입력해 주세요.");
+      return;
+    }
+
     setLoading(true);
     setReport(null);
 
@@ -63,7 +69,11 @@ export default function HomePage() {
       const response = await fetch("/api/reports", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ keywords }),
+        body: JSON.stringify({
+          keywords,
+          recipient_email: email.trim(),
+          send_email: true,
+        }),
       });
 
       const data = await response.json();
@@ -123,7 +133,7 @@ export default function HomePage() {
       <header className="hero">
         <span className="badge-coral badge-muted">Weekly Brief</span>
         <h1>키워드 이슈 보고서</h1>
-        <p>Gemini API와 Google Search로 최근 7일 이내 이슈를 수집·분석해 보고서를 생성합니다.</p>
+        <p>Gemini + Google Search로 최근 7일 이슈를 분석해 보고서를 생성하고 이메일로 발송합니다.</p>
       </header>
 
       <main className="app">
@@ -157,8 +167,18 @@ export default function HomePage() {
               ))}
             </div>
 
+            <label htmlFor="emailInput">수신 이메일</label>
+            <input
+              id="emailInput"
+              type="email"
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
+              placeholder="user@example.com"
+              required
+            />
+
             <button className="btn-primary" type="submit" disabled={loading}>
-              {loading ? "보고서 생성 중..." : "보고서 생성"}
+              {loading ? "생성 및 발송 중..." : "보고서 생성 및 이메일 발송"}
             </button>
           </form>
 
@@ -167,6 +187,7 @@ export default function HomePage() {
               <h3 className="results-title">{report.title}</h3>
               <p className="results-meta">
                 생성 시각: {new Date(report.generated_at).toLocaleString("ko-KR")}
+                {report.email_sent ? " · 이메일 발송 완료" : " · 이메일 미발송"}
               </p>
 
               <div className="results-actions">
@@ -219,7 +240,7 @@ export default function HomePage() {
       <footer className="footer">
         <div className="footer-inner">
           <strong>키워드 이슈 보고서 서비스</strong>
-          Next.js + Gemini · Google Search 기반 최근 7일 이슈 분석
+          Next.js + Gemini + Resend · Google Search 기반 최근 7일 이슈 분석
         </div>
       </footer>
     </>

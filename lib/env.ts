@@ -19,4 +19,6 @@ function resolveGeminiModel(): string {
 export const env = {
   geminiApiKey: () => getEnv("GEMINI_API_KEY", "gemini_api_key"),
   geminiModel: resolveGeminiModel,
+  resendApiKey: () => getEnv("RESEND_API_KEY", "resend_api_key"),
+  resendFrom: () => getEnv("RESEND_FROM_EMAIL", "resend_from_email"),
 };

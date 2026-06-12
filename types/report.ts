@@ -17,4 +17,5 @@ export interface ReportResponse extends ReportData {
   report_id: string;
   generated_at: string;
   html_content: string;
+  email_sent: boolean;
 }
