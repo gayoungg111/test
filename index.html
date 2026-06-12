@@ -442,10 +442,15 @@
 
   <script>
     const DEFAULT_API_BASE = "https://gayoungg111-test.vercel.app";
-    const API_BASE =
-      window.location.protocol === "file:" || window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
-        ? (window.location.protocol === "file:" ? DEFAULT_API_BASE : "")
-        : "";
+
+    function getApiBase() {
+      if (window.location.protocol === "file:") {
+        return DEFAULT_API_BASE;
+      }
+      return "";
+    }
+
+    const API_BASE = getApiBase();
 
     const keywords = [];
     const keywordInput = document.getElementById("keywordInput");
@@ -559,7 +564,14 @@
 
         renderResults(data);
       } catch (error) {
-        alert(error.message || "요청에 실패했습니다.");
+        const message =
+          error.message === "Failed to fetch"
+            ? window.location.protocol === "file:"
+              ? "로컬 파일로 열면 API 호출이 차단될 수 있습니다. Vercel 주소에서 열어 주세요: " +
+                DEFAULT_API_BASE
+              : "서버에 연결하지 못했습니다. 잠시 후 다시 시도해 주세요."
+            : error.message || "요청에 실패했습니다.";
+        alert(message);
       } finally {
         submitBtn.disabled = false;
         submitBtn.textContent = "보고서 생성 및 이메일 발송";

@@ -9,6 +9,11 @@ from app.routers import report
 
 logging.basicConfig(level=logging.INFO)
 
+app = FastAPI(
+    title="키워드 이슈 보고서 서비스",
+    description="키워드 기반 최근 7일 이슈 수집, 보고서 생성, 이메일 발송 API",
+    version="1.0.0",
+)
 
 app.add_middleware(
     CORSMiddleware,
