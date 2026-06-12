@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>키워드 이슈 보고서 서비스</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: linear-gradient(180deg, #eff6ff 0%, #f3f4f6 240px, #f3f4f6 100%);
+      color: #111827;
+      padding: 40px 20px 64px;
+    }
+    .wrap { max-width: 880px; margin: 0 auto; }
+    .hero, .card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 28px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    }
+    .hero { margin-bottom: 20px; }
+    h1 { margin: 0 0 8px; font-size: 32px; }
+    .subtitle { color: #6b7280; margin: 0 0 20px; line-height: 1.6; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+    }
+    .card h2 { margin: 0 0 8px; font-size: 18px; }
+    .card p { margin: 0 0 16px; color: #6b7280; line-height: 1.5; font-size: 14px; }
+    a.link {
+      display: inline-block;
+      padding: 10px 14px;
+      background: #2563eb;
+      color: #fff;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 14px;
+    }
+    a.link.secondary {
+      background: #e5e7eb;
+      color: #111827;
+    }
+    .links { display: flex; flex-wrap: wrap; gap: 8px; }
+    code {
+      background: #f3f4f6;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 13px;
+    }
+    ul { margin: 0; padding-left: 20px; color: #374151; line-height: 1.8; }
+    .note {
+      margin-top: 20px;
+      padding: 16px;
+      background: #fffbeb;
+      border: 1px solid #fde68a;
+      border-radius: 12px;
+      color: #92400e;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="hero">
+      <h1>키워드 이슈 보고서 서비스</h1>
+      <p class="subtitle">
+        최근 7일 이슈를 수집해 Gemini로 보고서를 생성하고 이메일로 발송하는 서비스입니다.
+        아래 HTML 페이지를 브라우저에서 열어 확인할 수 있습니다.
+      </p>
+      <div class="links">
+        <a class="link" href="frontend/public/check.html">로컬 확인 페이지</a>
+        <a class="link secondary" href="samples/index.html">samples 폴더</a>
+        <a class="link secondary" href="https://gayoungg111-test.vercel.app/check.html">Vercel 확인 페이지</a>
+      </div>
+    </section>
+
+    <div class="grid">
+      <section class="card">
+        <h2>서비스 확인</h2>
+        <p>API 상태, 환경 변수, 보고서 생성 테스트</p>
+        <div class="links">
+          <a class="link" href="frontend/public/check.html">check.html</a>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>샘플 보고서</h2>
+        <p>생성되는 보고서 HTML 형식 미리보기</p>
+        <div class="links">
+          <a class="link secondary" href="frontend/public/sample-report.html">sample-report.html</a>
+          <a class="link secondary" href="samples/sample-report.html">samples 버전</a>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>배포 주소</h2>
+        <p>Vercel에 배포된 서비스 링크</p>
+        <div class="links">
+          <a class="link" href="https://gayoungg111-test.vercel.app/">메인 서비스</a>
+          <a class="link secondary" href="https://gayoungg111-test.vercel.app/check.html">check.html</a>
+        </div>
+      </section>
+    </div>
+
+    <section class="card" style="margin-top: 20px;">
+      <h2>폴더 구조</h2>
+      <ul>
+        <li><code>index.html</code> — 이 페이지 (프로젝트 시작점)</li>
+        <li><code>frontend/public/check.html</code> — 브라우저 확인 페이지</li>
+        <li><code>frontend/public/sample-report.html</code> — 샘플 보고서</li>
+        <li><code>samples/</code> — 로컬 확인용 HTML 모음</li>
+        <li><code>backend/</code> — FastAPI + Gemini API</li>
+      </ul>
+    </section>
+
+    <div class="note">
+      로컬에서 HTML 파일을 직접 열면(<code>file://</code>) API 테스트는 동작하지 않을 수 있습니다.
+      API 확인은 Vercel 배포 URL의 <code>/check.html</code>에서 해 주세요.
+    </div>
+  </div>
+</body>
+</html>

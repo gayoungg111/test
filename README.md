@@ -52,7 +52,13 @@
 | `/service-check.html` | `/check.html`로 이동 |
 | `/sample-report.html` | 샘플 보고서 HTML 미리보기 |
 
-저장소 내 샘플 파일: [`samples/sample-report.html`](samples/sample-report.html)
+로컬 HTML 인덱스:
+
+| 파일 | 설명 |
+|------|------|
+| [`index.html`](index.html) | 프로젝트 루트 인덱스 |
+| [`samples/index.html`](samples/index.html) | samples 폴더 인덱스 |
+| [`frontend/public/check.html`](frontend/public/check.html) | API 상태 + 테스트 |
 
 참고용 목록: [`vercel.env.example`](vercel.env.example)
 
