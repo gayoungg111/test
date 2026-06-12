@@ -4,10 +4,28 @@ import { FormEvent, KeyboardEvent, useRef, useState } from "react";
 
 import type { ReportResponse } from "@/types/report";
 
+function buildPlainText(report: ReportResponse): string {
+  const lines = [
+    report.title,
+    "",
+    `[요약]`,
+    report.summary,
+    "",
+    `[주요 이슈]`,
+    ...report.issues.map(
+      (issue, index) =>
+        `${index + 1}. ${issue.title}\n   ${issue.date} · ${issue.source}\n   ${issue.summary}${issue.url ? `\n   ${issue.url}` : ""}`,
+    ),
+    "",
+    `[트렌드 및 시사점]`,
+    report.insights,
+  ];
+  return lines.join("\n");
+}
+
 export default function HomePage() {
   const [keywords, setKeywords] = useState<string[]>([]);
   const [keywordInput, setKeywordInput] = useState("");
-  const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [report, setReport] = useState<ReportResponse | null>(null);
   const resultsRef = useRef<HTMLDivElement>(null);
@@ -38,11 +56,6 @@ export default function HomePage() {
       return;
     }
 
-    if (!email.trim()) {
-      alert("수신 이메일을 입력해 주세요.");
-      return;
-    }
-
     setLoading(true);
     setReport(null);
 
@@ -50,11 +63,7 @@ export default function HomePage() {
       const response = await fetch("/api/reports", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          keywords,
-          recipient_email: email.trim(),
-          send_email: true,
-        }),
+        body: JSON.stringify({ keywords }),
       });
 
       const data = await response.json();
@@ -70,6 +79,27 @@ export default function HomePage() {
       alert(error instanceof Error ? error.message : "요청에 실패했습니다.");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const downloadHtml = () => {
+    if (!report) return;
+    const blob = new Blob([report.html_content], { type: "text/html;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = `issue-report-${report.report_id.slice(0, 8)}.html`;
+    anchor.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const copyText = async () => {
+    if (!report) return;
+    try {
+      await navigator.clipboard.writeText(buildPlainText(report));
+      alert("보고서 내용을 클립보드에 복사했습니다.");
+    } catch {
+      alert("복사에 실패했습니다. 브라우저 권한을 확인해 주세요.");
     }
   };
 
@@ -93,7 +123,7 @@ export default function HomePage() {
       <header className="hero">
         <span className="badge-coral badge-muted">Weekly Brief</span>
         <h1>키워드 이슈 보고서</h1>
-        <p>최근 7일 이내 이슈를 수집해 보고서를 생성하고 Resend로 이메일 발송합니다.</p>
+        <p>Gemini API로 최근 7일 이내 이슈를 분석해 보고서를 생성합니다.</p>
       </header>
 
       <main className="app">
@@ -127,18 +157,8 @@ export default function HomePage() {
               ))}
             </div>
 
-            <label htmlFor="emailInput">수신 이메일</label>
-            <input
-              id="emailInput"
-              type="email"
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
-              placeholder="user@example.com"
-              required
-            />
-
             <button className="btn-primary" type="submit" disabled={loading}>
-              {loading ? "생성 및 발송 중..." : "보고서 생성 및 이메일 발송"}
+              {loading ? "보고서 생성 중..." : "보고서 생성"}
             </button>
           </form>
 
@@ -147,8 +167,16 @@ export default function HomePage() {
               <h3 className="results-title">{report.title}</h3>
               <p className="results-meta">
                 생성 시각: {new Date(report.generated_at).toLocaleString("ko-KR")}
-                {report.email_sent ? " · 이메일 발송 완료" : " · 이메일 미발송"}
               </p>
+
+              <div className="results-actions">
+                <button className="btn-secondary" type="button" onClick={downloadHtml}>
+                  HTML 다운로드
+                </button>
+                <button className="btn-secondary" type="button" onClick={copyText}>
+                  텍스트 복사
+                </button>
+              </div>
 
               <div className="results-summary">
                 <h3>요약</h3>
@@ -191,7 +219,7 @@ export default function HomePage() {
       <footer className="footer">
         <div className="footer-inner">
           <strong>키워드 이슈 보고서 서비스</strong>
-          Next.js + Gemini + Resend · 최근 7일 이슈 수집
+          Next.js + Gemini API · 최근 7일 이슈 분석
         </div>
       </footer>
     </>

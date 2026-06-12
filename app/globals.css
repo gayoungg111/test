@@ -236,9 +236,20 @@ button {
 }
 
 .results-meta {
-  margin: 0 0 20px;
+  margin: 0 0 16px;
   color: var(--muted);
   font-size: 13px;
+}
+
+.results-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.results-actions .btn-secondary {
+  width: auto;
 }
 
 .results-summary,
