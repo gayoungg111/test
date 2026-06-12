@@ -3,125 +3,285 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>키워드 이슈 보고서 서비스</title>
+  <title>키워드 이슈 보고서</title>
   <style>
     * { box-sizing: border-box; }
     body {
       margin: 0;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: linear-gradient(180deg, #eff6ff 0%, #f3f4f6 240px, #f3f4f6 100%);
+      background: #f3f4f6;
       color: #111827;
-      padding: 40px 20px 64px;
+      padding: 32px 20px 64px;
     }
-    .wrap { max-width: 880px; margin: 0 auto; }
-    .hero, .card {
+    .app { max-width: 960px; margin: 0 auto; }
+    .header { margin-bottom: 24px; }
+    .header h1 { margin: 0 0 8px; font-size: 28px; }
+    .header p { margin: 0; color: #6b7280; }
+    .layout { display: grid; gap: 24px; }
+    .card {
       background: #fff;
-      border-radius: 16px;
-      padding: 28px;
+      border-radius: 12px;
+      padding: 24px;
       box-shadow: 0 1px 3px rgba(0,0,0,0.08);
     }
-    .hero { margin-bottom: 20px; }
-    h1 { margin: 0 0 8px; font-size: 32px; }
-    .subtitle { color: #6b7280; margin: 0 0 20px; line-height: 1.6; }
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 16px;
+    .card h2 { margin: 0 0 16px; font-size: 20px; }
+    label { display: block; font-weight: 600; margin-bottom: 8px; }
+    input[type="text"], input[type="email"] {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      font: inherit;
     }
-    .card h2 { margin: 0 0 8px; font-size: 18px; }
-    .card p { margin: 0 0 16px; color: #6b7280; line-height: 1.5; font-size: 14px; }
-    a.link {
-      display: inline-block;
-      padding: 10px 14px;
+    .row { display: flex; gap: 8px; margin-bottom: 12px; }
+    .row input { flex: 1; margin-bottom: 0; }
+    button {
+      font: inherit;
+      cursor: pointer;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 16px;
+      font-weight: 600;
+    }
+    .btn-add { background: #e5e7eb; color: #111827; }
+    .btn-submit {
+      width: 100%;
+      margin-top: 8px;
+      padding: 12px 16px;
       background: #2563eb;
       color: #fff;
-      text-decoration: none;
+    }
+    .btn-submit:disabled { opacity: 0.6; cursor: not-allowed; }
+    .tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; min-height: 32px; }
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 10px;
+      background: #eff6ff;
+      color: #1d4ed8;
+      border-radius: 999px;
+      font-size: 14px;
+    }
+    .tag button {
+      background: transparent;
+      color: #1d4ed8;
+      padding: 0;
+      font-size: 16px;
+      line-height: 1;
+    }
+    .checkbox-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 16px 0 20px;
+      cursor: pointer;
+    }
+    .banner {
       border-radius: 8px;
-      font-weight: 600;
-      font-size: 14px;
+      padding: 12px 16px;
+      margin-bottom: 16px;
+      display: none;
     }
-    a.link.secondary {
-      background: #e5e7eb;
-      color: #111827;
+    .banner.error { display: block; background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; }
+    .banner.success { display: block; background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; }
+    .banner.loading { display: block; background: #fff; border: 1px solid #e5e7eb; color: #374151; }
+    .preview-box {
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      overflow: hidden;
+      background: #fff;
+      min-height: 200px;
     }
-    .links { display: flex; flex-wrap: wrap; gap: 8px; }
-    code {
-      background: #f3f4f6;
-      padding: 2px 6px;
-      border-radius: 4px;
-      font-size: 13px;
+    iframe {
+      width: 100%;
+      min-height: 720px;
+      border: none;
+      display: none;
     }
-    ul { margin: 0; padding-left: 20px; color: #374151; line-height: 1.8; }
-    .note {
-      margin-top: 20px;
-      padding: 16px;
-      background: #fffbeb;
-      border: 1px solid #fde68a;
-      border-radius: 12px;
-      color: #92400e;
-      font-size: 14px;
-      line-height: 1.6;
+    .empty-preview {
+      padding: 32px;
+      text-align: center;
+      color: #6b7280;
+    }
+    @media (min-width: 900px) {
+      .layout { grid-template-columns: 1fr 1fr; align-items: start; }
+      .preview-card { grid-column: 1 / -1; }
     }
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <section class="hero">
-      <h1>키워드 이슈 보고서 서비스</h1>
-      <p class="subtitle">
-        최근 7일 이슈를 수집해 Gemini로 보고서를 생성하고 이메일로 발송하는 서비스입니다.
-        아래 HTML 페이지를 브라우저에서 열어 확인할 수 있습니다.
-      </p>
-      <div class="links">
-        <a class="link" href="frontend/public/check.html">로컬 확인 페이지</a>
-        <a class="link secondary" href="samples/index.html">samples 폴더</a>
-        <a class="link secondary" href="https://gayoungg111-test.vercel.app/check.html">Vercel 확인 페이지</a>
-      </div>
-    </section>
+  <div class="app">
+    <header class="header">
+      <h1>키워드 이슈 보고서</h1>
+      <p>최근 7일 이내 이슈를 수집해 보고서를 생성하고 이메일로 발송합니다.</p>
+    </header>
 
-    <div class="grid">
-      <section class="card">
-        <h2>서비스 확인</h2>
-        <p>API 상태, 환경 변수, 보고서 생성 테스트</p>
-        <div class="links">
-          <a class="link" href="frontend/public/check.html">check.html</a>
-        </div>
-      </section>
-
-      <section class="card">
-        <h2>샘플 보고서</h2>
-        <p>생성되는 보고서 HTML 형식 미리보기</p>
-        <div class="links">
-          <a class="link secondary" href="frontend/public/sample-report.html">sample-report.html</a>
-          <a class="link secondary" href="samples/sample-report.html">samples 버전</a>
-        </div>
-      </section>
-
-      <section class="card">
-        <h2>배포 주소</h2>
-        <p>Vercel에 배포된 서비스 링크</p>
-        <div class="links">
-          <a class="link" href="https://gayoungg111-test.vercel.app/">메인 서비스</a>
-          <a class="link secondary" href="https://gayoungg111-test.vercel.app/check.html">check.html</a>
-        </div>
-      </section>
+    <div id="errorBanner" class="banner error"></div>
+    <div id="successBanner" class="banner success"></div>
+    <div id="loadingBanner" class="banner loading">
+      <strong>처리 중...</strong>
+      <p style="margin:8px 0 0;color:#6b7280;">이슈 수집 → 보고서 생성 → 이메일 발송 (10~30초)</p>
     </div>
 
-    <section class="card" style="margin-top: 20px;">
-      <h2>폴더 구조</h2>
-      <ul>
-        <li><code>index.html</code> — 이 페이지 (프로젝트 시작점)</li>
-        <li><code>frontend/public/check.html</code> — 브라우저 확인 페이지</li>
-        <li><code>frontend/public/sample-report.html</code> — 샘플 보고서</li>
-        <li><code>samples/</code> — 로컬 확인용 HTML 모음</li>
-        <li><code>backend/</code> — FastAPI + Gemini API</li>
-      </ul>
-    </section>
+    <div class="layout">
+      <section class="card">
+        <h2>보고서 생성</h2>
 
-    <div class="note">
-      로컬에서 HTML 파일을 직접 열면(<code>file://</code>) API 테스트는 동작하지 않을 수 있습니다.
-      API 확인은 Vercel 배포 URL의 <code>/check.html</code>에서 해 주세요.
+        <label for="keywordInput">키워드</label>
+        <div class="row">
+          <input id="keywordInput" type="text" placeholder="예: AI 규제">
+          <button class="btn-add" type="button" id="addKeywordBtn">추가</button>
+        </div>
+        <div class="tags" id="keywordTags"></div>
+
+        <label for="emailInput">수신 이메일</label>
+        <input id="emailInput" type="email" placeholder="user@example.com" required>
+
+        <label class="checkbox-row">
+          <input id="sendEmail" type="checkbox" checked>
+          생성 후 이메일 발송
+        </label>
+
+        <button class="btn-submit" type="button" id="submitBtn">보고서 생성</button>
+      </section>
+
+      <section class="card preview-card">
+        <h2>보고서 미리보기</h2>
+        <p id="generatedAt" style="color:#6b7280;margin-top:0;display:none;"></p>
+        <div class="preview-box">
+          <div class="empty-preview" id="emptyPreview">
+            키워드를 입력하고 보고서를 생성하면 결과가 여기에 표시됩니다.
+          </div>
+          <iframe id="reportFrame" title="report-preview"></iframe>
+        </div>
+      </section>
     </div>
   </div>
+
+  <script>
+    const DEFAULT_API_BASE = "https://gayoungg111-test.vercel.app";
+    const API_BASE =
+      window.location.protocol === "file:" || window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
+        ? (window.location.protocol === "file:" ? DEFAULT_API_BASE : "")
+        : "";
+
+    const keywords = [];
+    const keywordInput = document.getElementById("keywordInput");
+    const keywordTags = document.getElementById("keywordTags");
+    const emailInput = document.getElementById("emailInput");
+    const sendEmail = document.getElementById("sendEmail");
+    const submitBtn = document.getElementById("submitBtn");
+    const reportFrame = document.getElementById("reportFrame");
+    const emptyPreview = document.getElementById("emptyPreview");
+    const generatedAt = document.getElementById("generatedAt");
+    const errorBanner = document.getElementById("errorBanner");
+    const successBanner = document.getElementById("successBanner");
+    const loadingBanner = document.getElementById("loadingBanner");
+
+    function hideBanners() {
+      errorBanner.className = "banner error";
+      errorBanner.textContent = "";
+      successBanner.className = "banner success";
+      successBanner.textContent = "";
+      loadingBanner.style.display = "none";
+    }
+
+    function showError(message) {
+      hideBanners();
+      errorBanner.className = "banner error";
+      errorBanner.textContent = message;
+    }
+
+    function showSuccess(message) {
+      successBanner.className = "banner success";
+      successBanner.textContent = message;
+    }
+
+    function renderTags() {
+      keywordTags.innerHTML = "";
+      keywords.forEach((keyword) => {
+        const span = document.createElement("span");
+        span.className = "tag";
+        span.innerHTML = `${keyword}<button type="button" aria-label="remove">×</button>`;
+        span.querySelector("button").addEventListener("click", () => {
+          const index = keywords.indexOf(keyword);
+          if (index >= 0) keywords.splice(index, 1);
+          renderTags();
+        });
+        keywordTags.appendChild(span);
+      });
+    }
+
+    function addKeyword() {
+      const value = keywordInput.value.trim();
+      if (!value || keywords.includes(value) || keywords.length >= 10) return;
+      keywords.push(value);
+      keywordInput.value = "";
+      renderTags();
+    }
+
+    async function createReport() {
+      hideBanners();
+
+      if (keywords.length === 0) {
+        showError("키워드를 1개 이상 추가해 주세요.");
+        return;
+      }
+
+      const email = emailInput.value.trim();
+      if (!email) {
+        showError("수신 이메일을 입력해 주세요.");
+        return;
+      }
+
+      submitBtn.disabled = true;
+      loadingBanner.style.display = "block";
+
+      try {
+        const response = await fetch(`${API_BASE}/api/reports`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            keywords,
+            recipient_email: email,
+            send_email: sendEmail.checked,
+          }),
+        });
+
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) {
+          throw new Error(data.detail || "보고서 생성에 실패했습니다.");
+        }
+
+        emptyPreview.style.display = "none";
+        reportFrame.style.display = "block";
+        reportFrame.srcdoc = data.html_content;
+        generatedAt.style.display = "block";
+        generatedAt.textContent = "생성 시각: " + new Date(data.generated_at).toLocaleString("ko-KR");
+
+        if (data.email_sent) {
+          showSuccess("보고서가 생성되었고 이메일이 발송되었습니다.");
+        } else {
+          showSuccess("보고서가 생성되었습니다.");
+        }
+      } catch (error) {
+        showError(error.message || "요청에 실패했습니다.");
+      } finally {
+        submitBtn.disabled = false;
+        loadingBanner.style.display = "none";
+      }
+    }
+
+    document.getElementById("addKeywordBtn").addEventListener("click", addKeyword);
+    keywordInput.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        addKeyword();
+      }
+    });
+    submitBtn.addEventListener("click", createReport);
+    renderTags();
+  </script>
 </body>
 </html>
