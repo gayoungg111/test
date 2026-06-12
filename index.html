@@ -26,8 +26,6 @@
       --on-primary: #ffffff;
       --on-dark: #faf9f5;
       --on-dark-soft: #a09d96;
-      --success: #5db872;
-      --error: #c64545;
       --radius-md: 8px;
       --radius-lg: 12px;
       --radius-xl: 16px;
@@ -262,35 +260,6 @@
       color: var(--body);
     }
 
-    .banner {
-      border-radius: var(--radius-lg);
-      padding: 16px 20px;
-      margin-bottom: 16px;
-      display: none;
-      font-size: 14px;
-    }
-
-    .banner.error {
-      display: block;
-      background: #fdf3f3;
-      color: var(--error);
-      border: 1px solid rgba(198, 69, 69, 0.25);
-    }
-
-    .banner.success {
-      display: block;
-      background: #f0faf3;
-      color: var(--success);
-      border: 1px solid rgba(93, 184, 114, 0.25);
-    }
-
-    .banner.loading {
-      display: block;
-      background: var(--surface-soft);
-      color: var(--body);
-      border: 1px solid var(--hairline);
-    }
-
     .preview-box {
       border: 1px solid var(--surface-dark-soft);
       border-radius: var(--radius-lg);
@@ -370,13 +339,6 @@
   </header>
 
   <main class="app">
-    <div id="errorBanner" class="banner error"></div>
-    <div id="successBanner" class="banner success"></div>
-    <div id="loadingBanner" class="banner loading">
-      <strong>처리 중...</strong>
-      <p style="margin:8px 0 0;color:var(--muted);">이슈 수집 → 보고서 생성 → 이메일 발송 (10~30초)</p>
-    </div>
-
     <div class="layout">
       <section class="feature-card">
         <h2 class="card-title">보고서 생성</h2>
@@ -435,28 +397,6 @@
     const reportFrame = document.getElementById("reportFrame");
     const emptyPreview = document.getElementById("emptyPreview");
     const generatedAt = document.getElementById("generatedAt");
-    const errorBanner = document.getElementById("errorBanner");
-    const successBanner = document.getElementById("successBanner");
-    const loadingBanner = document.getElementById("loadingBanner");
-
-    function hideBanners() {
-      errorBanner.className = "banner error";
-      errorBanner.textContent = "";
-      successBanner.className = "banner success";
-      successBanner.textContent = "";
-      loadingBanner.style.display = "none";
-    }
-
-    function showError(message) {
-      hideBanners();
-      errorBanner.className = "banner error";
-      errorBanner.textContent = message;
-    }
-
-    function showSuccess(message) {
-      successBanner.className = "banner success";
-      successBanner.textContent = message;
-    }
 
     function renderTags() {
       keywordTags.innerHTML = "";
@@ -482,21 +422,19 @@
     }
 
     async function createReport() {
-      hideBanners();
-
       if (keywords.length === 0) {
-        showError("키워드를 1개 이상 추가해 주세요.");
+        alert("키워드를 1개 이상 추가해 주세요.");
         return;
       }
 
       const email = emailInput.value.trim();
       if (!email) {
-        showError("수신 이메일을 입력해 주세요.");
+        alert("수신 이메일을 입력해 주세요.");
         return;
       }
 
       submitBtn.disabled = true;
-      loadingBanner.style.display = "block";
+      submitBtn.textContent = "생성 중...";
 
       try {
         const response = await fetch(`${API_BASE}/api/reports`, {
@@ -519,17 +457,11 @@
         reportFrame.srcdoc = data.html_content;
         generatedAt.style.display = "block";
         generatedAt.textContent = "생성 시각: " + new Date(data.generated_at).toLocaleString("ko-KR");
-
-        if (data.email_sent) {
-          showSuccess("보고서가 생성되었고 이메일이 발송되었습니다.");
-        } else {
-          showSuccess("보고서가 생성되었습니다.");
-        }
       } catch (error) {
-        showError(error.message || "요청에 실패했습니다.");
+        alert(error.message || "요청에 실패했습니다.");
       } finally {
         submitBtn.disabled = false;
-        loadingBanner.style.display = "none";
+        submitBtn.textContent = "보고서 생성";
       }
     }
 
