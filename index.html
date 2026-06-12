@@ -118,18 +118,11 @@
       gap: 24px;
     }
 
-    .feature-card,
-    .preview-card {
+    .feature-card {
       background: var(--surface-card);
       border: 1px solid var(--hairline);
       border-radius: var(--radius-lg);
       padding: 32px;
-    }
-
-    .preview-card {
-      background: var(--surface-dark);
-      border-color: var(--surface-dark);
-      color: var(--on-dark);
     }
 
     .card-title {
@@ -140,20 +133,12 @@
       color: var(--ink);
     }
 
-    .preview-card .card-title {
-      color: var(--on-dark);
-    }
-
     label {
       display: block;
       margin-bottom: 8px;
       font-size: 14px;
       font-weight: 500;
       color: var(--body-strong);
-    }
-
-    .preview-card label {
-      color: var(--on-dark);
     }
 
     input[type="text"],
@@ -260,34 +245,113 @@
       color: var(--body);
     }
 
-    .preview-box {
-      border: 1px solid var(--surface-dark-soft);
-      border-radius: var(--radius-lg);
-      overflow: hidden;
-      background: var(--surface-dark-soft);
-      min-height: 200px;
-    }
-
-    iframe {
-      width: 100%;
-      min-height: 720px;
-      border: none;
+    .results-section {
       display: none;
-      background: var(--canvas);
+      margin-top: 32px;
+      padding-top: 32px;
+      border-top: 1px solid var(--hairline);
     }
 
-    .empty-preview {
-      padding: 48px 24px;
-      text-align: center;
-      color: var(--on-dark-soft);
-      font-size: 14px;
+    .results-section.visible {
+      display: block;
     }
 
-    .generated-at {
-      color: var(--on-dark-soft);
+    .results-header {
+      margin-bottom: 20px;
+    }
+
+    .results-title {
+      margin: 0 0 8px;
+      font-family: var(--font-display);
+      font-size: 28px;
+      font-weight: 400;
+      line-height: 1.2;
+      letter-spacing: -0.3px;
+      color: var(--ink);
+    }
+
+    .results-meta {
+      margin: 0;
+      color: var(--muted);
       font-size: 13px;
-      margin: 0 0 16px;
-      display: none;
+    }
+
+    .results-summary {
+      margin-bottom: 24px;
+      padding: 20px;
+      background: var(--surface-soft);
+      border: 1px solid var(--hairline);
+      border-radius: var(--radius-lg);
+    }
+
+    .results-summary h3,
+    .results-insights h3,
+    .results-issues h3 {
+      margin: 0 0 12px;
+      font-size: 16px;
+      font-weight: 500;
+      color: var(--ink);
+    }
+
+    .results-summary p,
+    .results-insights p {
+      margin: 0;
+      color: var(--body);
+      line-height: 1.55;
+    }
+
+    .issue-list {
+      display: grid;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .issue-item {
+      padding: 20px;
+      background: var(--canvas);
+      border: 1px solid var(--hairline);
+      border-radius: var(--radius-lg);
+    }
+
+    .issue-item h4 {
+      margin: 0 0 8px;
+      font-size: 16px;
+      font-weight: 500;
+      color: var(--ink);
+    }
+
+    .issue-meta {
+      margin: 0 0 8px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .issue-item p {
+      margin: 0 0 8px;
+      color: var(--body);
+      line-height: 1.55;
+    }
+
+    .issue-item a {
+      color: var(--primary);
+      font-size: 13px;
+      font-weight: 500;
+      text-decoration: none;
+    }
+
+    .results-insights {
+      padding: 24px;
+      background: var(--surface-dark);
+      border-radius: var(--radius-lg);
+      color: var(--on-dark-soft);
+    }
+
+    .results-insights h3 {
+      color: var(--on-dark);
+    }
+
+    .results-insights p {
+      color: var(--on-dark-soft);
     }
 
     .footer {
@@ -347,17 +411,28 @@
           생성 후 이메일 발송
         </label>
 
-        <button class="btn-primary" type="button" id="submitBtn">보고서 생성</button>
-      </section>
+        <button class="btn-primary" type="button" id="submitBtn">검색</button>
 
-      <section class="preview-card">
-        <h2 class="card-title">보고서 미리보기</h2>
-        <p class="generated-at" id="generatedAt"></p>
-        <div class="preview-box">
-          <div class="empty-preview" id="emptyPreview">
-            키워드를 입력하고 보고서를 생성하면 결과가 여기에 표시됩니다.
+        <div id="resultsSection" class="results-section">
+          <div class="results-header">
+            <h3 class="results-title" id="resultsTitle"></h3>
+            <p class="results-meta" id="generatedAt"></p>
           </div>
-          <iframe id="reportFrame" title="report-preview"></iframe>
+
+          <div class="results-summary">
+            <h3>요약</h3>
+            <p id="resultsSummary"></p>
+          </div>
+
+          <div class="results-issues">
+            <h3>주요 이슈</h3>
+            <div class="issue-list" id="issueList"></div>
+          </div>
+
+          <div class="results-insights">
+            <h3>트렌드 및 시사점</h3>
+            <p id="resultsInsights"></p>
+          </div>
         </div>
       </section>
     </div>
@@ -383,9 +458,50 @@
     const emailInput = document.getElementById("emailInput");
     const sendEmail = document.getElementById("sendEmail");
     const submitBtn = document.getElementById("submitBtn");
-    const reportFrame = document.getElementById("reportFrame");
-    const emptyPreview = document.getElementById("emptyPreview");
+    const resultsSection = document.getElementById("resultsSection");
+    const resultsTitle = document.getElementById("resultsTitle");
     const generatedAt = document.getElementById("generatedAt");
+    const resultsSummary = document.getElementById("resultsSummary");
+    const issueList = document.getElementById("issueList");
+    const resultsInsights = document.getElementById("resultsInsights");
+
+    function escapeHtml(text) {
+      return String(text)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    function renderResults(data) {
+      resultsTitle.textContent = data.title || "검색 결과";
+      generatedAt.textContent =
+        "생성 시각: " + new Date(data.generated_at).toLocaleString("ko-KR");
+      resultsSummary.textContent = data.summary || "요약 정보가 없습니다.";
+
+      if (data.issues && data.issues.length > 0) {
+        issueList.innerHTML = data.issues
+          .map(
+            (issue) => `
+              <article class="issue-item">
+                <h4>${escapeHtml(issue.title)}</h4>
+                <p class="issue-meta">${escapeHtml(issue.date)} · ${escapeHtml(issue.source)}</p>
+                <p>${escapeHtml(issue.summary)}</p>
+                <a href="${escapeHtml(issue.url)}" target="_blank" rel="noopener noreferrer">원문 보기</a>
+              </article>
+            `,
+          )
+          .join("");
+      } else {
+        issueList.innerHTML =
+          '<p style="margin:0;color:var(--muted);">수집된 이슈가 없습니다.</p>';
+      }
+
+      resultsInsights.textContent =
+        data.insights || "시사점 정보가 없습니다.";
+      resultsSection.classList.add("visible");
+      resultsSection.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
 
     function renderTags() {
       keywordTags.innerHTML = "";
@@ -423,7 +539,7 @@
       }
 
       submitBtn.disabled = true;
-      submitBtn.textContent = "생성 중...";
+      submitBtn.textContent = "검색 중...";
 
       try {
         const response = await fetch(`${API_BASE}/api/reports`, {
@@ -441,16 +557,12 @@
           throw new Error(data.detail || "보고서 생성에 실패했습니다.");
         }
 
-        emptyPreview.style.display = "none";
-        reportFrame.style.display = "block";
-        reportFrame.srcdoc = data.html_content;
-        generatedAt.style.display = "block";
-        generatedAt.textContent = "생성 시각: " + new Date(data.generated_at).toLocaleString("ko-KR");
+        renderResults(data);
       } catch (error) {
         alert(error.message || "요청에 실패했습니다.");
       } finally {
         submitBtn.disabled = false;
-        submitBtn.textContent = "보고서 생성";
+        submitBtn.textContent = "검색";
       }
     }
 
