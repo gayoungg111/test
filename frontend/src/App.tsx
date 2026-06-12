@@ -28,7 +28,7 @@ function App() {
         <h1>키워드 이슈 보고서</h1>
         <p>최근 7일 이내 이슈를 수집해 보고서를 생성하고 이메일로 발송합니다.</p>
         <p style={{ marginTop: 12, fontSize: 14 }}>
-          <a href="/service-check.html" style={{ color: "#2563eb", marginRight: 16 }}>
+          <a href="/check.html" style={{ color: "#2563eb", marginRight: 16 }}>
             서비스 확인 페이지
           </a>
           <a href="/sample-report.html" style={{ color: "#2563eb" }}>

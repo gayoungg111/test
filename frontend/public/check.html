@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>서비스 확인 - 키워드 이슈 보고서</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #f3f4f6;
+      color: #111827;
+      padding: 32px 20px 64px;
+    }
+    .wrap { max-width: 800px; margin: 0 auto; }
+    .card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 16px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    }
+    h1 { margin: 0 0 8px; font-size: 28px; }
+    h2 { margin: 0 0 12px; font-size: 18px; }
+    p, li { line-height: 1.6; color: #374151; }
+    .muted { color: #6b7280; font-size: 14px; }
+    .btn-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+    a.btn, button.btn {
+      display: inline-block;
+      padding: 10px 16px;
+      background: #2563eb;
+      color: #fff;
+      text-decoration: none;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      font: inherit;
+    }
+    a.btn.secondary, button.btn.secondary {
+      background: #e5e7eb;
+      color: #111827;
+    }
+    .status-grid {
+      display: grid;
+      gap: 12px;
+      margin-top: 16px;
+    }
+    .status-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 14px;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      background: #f9fafb;
+    }
+    .badge {
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .badge.ok { background: #d1fae5; color: #047857; }
+    .badge.fail { background: #fee2e2; color: #b91c1c; }
+    .badge.wait { background: #fef3c7; color: #b45309; }
+    pre {
+      background: #111827;
+      color: #f9fafb;
+      padding: 16px;
+      border-radius: 8px;
+      overflow: auto;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    iframe {
+      width: 100%;
+      min-height: 480px;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      background: #fff;
+    }
+    label { display: block; font-weight: 600; margin-bottom: 6px; }
+    input {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      margin-bottom: 12px;
+      font: inherit;
+    }
+    .error-box {
+      background: #fef2f2;
+      color: #b91c1c;
+      border: 1px solid #fecaca;
+      padding: 12px 14px;
+      border-radius: 8px;
+      margin-top: 12px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h1>키워드 이슈 보고서 서비스 확인</h1>
+      <p class="muted">브라우저에서 배포 상태, API 연결, 환경 변수, 샘플 보고서를 확인할 수 있습니다.</p>
+      <div class="btn-row">
+        <button class="btn" id="refreshBtn" type="button">상태 새로고침</button>
+        <a class="btn secondary" href="/">메인 서비스 열기</a>
+        <a class="btn secondary" href="/sample-report.html">샘플 보고서 HTML</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>실시간 상태</h2>
+      <div class="status-grid">
+        <div class="status-item">
+          <span>HTML 페이지 로드</span>
+          <span class="badge ok" id="htmlStatus">정상</span>
+        </div>
+        <div class="status-item">
+          <span>API 연결 (<code>/api/health</code>)</span>
+          <span class="badge wait" id="apiStatus">확인 중...</span>
+        </div>
+        <div class="status-item">
+          <span>Gemini API Key</span>
+          <span class="badge wait" id="geminiStatus">확인 중...</span>
+        </div>
+        <div class="status-item">
+          <span>Tavily API Key</span>
+          <span class="badge wait" id="tavilyStatus">확인 중...</span>
+        </div>
+      </div>
+      <pre id="healthJson">API 상태를 불러오는 중...</pre>
+      <div class="error-box" id="errorBox"></div>
+    </div>
+
+    <div class="card">
+      <h2>간단 API 테스트</h2>
+      <p class="muted">키워드 1개와 이메일을 입력하면 보고서 생성 API를 호출합니다.</p>
+      <label for="keyword">키워드</label>
+      <input id="keyword" type="text" value="AI 규제" placeholder="예: AI 규제">
+      <label for="email">수신 이메일</label>
+      <input id="email" type="email" value="test@example.com" placeholder="user@example.com">
+      <div class="btn-row">
+        <button class="btn" id="testBtn" type="button">보고서 생성 테스트</button>
+      </div>
+      <pre id="testResult" style="margin-top: 16px; display: none;"></pre>
+      <iframe id="reportFrame" title="report-preview" style="display: none; margin-top: 16px;"></iframe>
+    </div>
+
+    <div class="card">
+      <h2>샘플 보고서 미리보기</h2>
+      <iframe src="/sample-report.html" title="sample-report"></iframe>
+    </div>
+  </div>
+
+  <script>
+    const healthJson = document.getElementById("healthJson");
+    const errorBox = document.getElementById("errorBox");
+    const apiStatus = document.getElementById("apiStatus");
+    const geminiStatus = document.getElementById("geminiStatus");
+    const tavilyStatus = document.getElementById("tavilyStatus");
+
+    function setBadge(el, type, text) {
+      el.className = "badge " + type;
+      el.textContent = text;
+    }
+
+    function showError(message) {
+      errorBox.style.display = "block";
+      errorBox.textContent = message;
+    }
+
+    function hideError() {
+      errorBox.style.display = "none";
+      errorBox.textContent = "";
+    }
+
+    async function loadHealth() {
+      hideError();
+      setBadge(apiStatus, "wait", "확인 중...");
+      setBadge(geminiStatus, "wait", "확인 중...");
+      setBadge(tavilyStatus, "wait", "확인 중...");
+      healthJson.textContent = "API 상태를 불러오는 중...";
+
+      try {
+        const response = await fetch("/api/health");
+        const data = await response.json();
+        healthJson.textContent = JSON.stringify(data, null, 2);
+
+        if (!response.ok) {
+          throw new Error(data.detail || "API 호출 실패");
+        }
+
+        setBadge(apiStatus, "ok", "연결됨");
+        setBadge(
+          geminiStatus,
+          data.gemini_api_key_configured ? "ok" : "fail",
+          data.gemini_api_key_configured ? "설정됨" : "미설정"
+        );
+        setBadge(
+          tavilyStatus,
+          data.tavily_api_key_configured ? "ok" : "fail",
+          data.tavily_api_key_configured ? "설정됨" : "미설정"
+        );
+
+        if (!data.gemini_api_key_configured) {
+          showError("Gemini API Key가 Vercel 환경 변수에 없거나 재배포가 필요합니다. gemini_api_key 또는 GEMINI_API_KEY를 Production에 등록하세요.");
+        } else if (!data.tavily_api_key_configured) {
+          showError("Tavily API Key가 아직 설정되지 않았습니다. tavily_api_key 또는 TAVILY_API_KEY를 등록하세요.");
+        }
+      } catch (error) {
+        setBadge(apiStatus, "fail", "실패");
+        setBadge(geminiStatus, "fail", "확인 불가");
+        setBadge(tavilyStatus, "fail", "확인 불가");
+        healthJson.textContent = "{}";
+        showError(
+          "API에 연결하지 못했습니다. Vercel 배포 URL에서 열었는지 확인하세요. 로컬 파일(file://)로는 API 확인이 되지 않습니다."
+        );
+      }
+    }
+
+    async function testReport() {
+      const keyword = document.getElementById("keyword").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const testResult = document.getElementById("testResult");
+      const reportFrame = document.getElementById("reportFrame");
+
+      if (!keyword || !email) {
+        alert("키워드와 이메일을 입력해 주세요.");
+        return;
+      }
+
+      testResult.style.display = "block";
+      testResult.textContent = "보고서 생성 중... (10~30초)";
+      reportFrame.style.display = "none";
+
+      try {
+        const response = await fetch("/api/reports", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            keywords: [keyword],
+            recipient_email: email,
+            send_email: false,
+          }),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.detail || "보고서 생성 실패");
+        }
+
+        testResult.textContent = JSON.stringify(
+          {
+            report_id: data.report_id,
+            title: data.title,
+            summary: data.summary,
+            issue_count: data.issues?.length ?? 0,
+            email_sent: data.email_sent,
+          },
+          null,
+          2
+        );
+
+        reportFrame.srcdoc = data.html_content;
+        reportFrame.style.display = "block";
+      } catch (error) {
+        testResult.textContent = "오류: " + error.message;
+      }
+    }
+
+    document.getElementById("refreshBtn").addEventListener("click", loadHealth);
+    document.getElementById("testBtn").addEventListener("click", testReport);
+    loadHealth();
+  </script>
+</body>
+</html>

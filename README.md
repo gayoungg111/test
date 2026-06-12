@@ -48,7 +48,8 @@
 | URL | 설명 |
 |-----|------|
 | `/` | 메인 서비스 (키워드 입력 → 보고서 생성) |
-| `/service-check.html` | 배포 확인용 정적 페이지 |
+| `/check.html` | **브라우저 확인 페이지** (API 상태 + 테스트) |
+| `/service-check.html` | `/check.html`로 이동 |
 | `/sample-report.html` | 샘플 보고서 HTML 미리보기 |
 
 저장소 내 샘플 파일: [`samples/sample-report.html`](samples/sample-report.html)
