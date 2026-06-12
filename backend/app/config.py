@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 
+from pydantic import AliasChoices, Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -13,11 +14,21 @@ def _default_output_dir() -> Path:
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         extra="ignore",
+        populate_by_name=True,
     )
 
-    gemini_api_key: str = ""
-    gemini_model: str = "gemini-2.0-flash"
-    tavily_api_key: str = ""
+    gemini_api_key: str = Field(
+        default="",
+        validation_alias=AliasChoices("GEMINI_API_KEY", "gemini_api_key"),
+    )
+    gemini_model: str = Field(
+        default="gemini-2.0-flash",
+        validation_alias=AliasChoices("GEMINI_MODEL", "gemini_model"),
+    )
+    tavily_api_key: str = Field(
+        default="",
+        validation_alias=AliasChoices("TAVILY_API_KEY", "tavily_api_key"),
+    )
 
     smtp_enabled: bool = False
     smtp_host: str = "smtp.gmail.com"
